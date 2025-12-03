@@ -331,7 +331,9 @@ def do_post_connect(env, args):
     if args.prevent_idle_timeout:
         dns = env.dns + env.dns6
         idle_timeout = env.idle_timeout
-        setproctitle(f'vpn-slice --prevent-idle-timeout --name {args.name}')
+        # Skip setproctitle on macOS due to fork-safety issues with CoreFoundation
+        if platform != 'darwin':
+            setproctitle(f'vpn-slice --prevent-idle-timeout --name {args.name}')
         if args.verbose:
             print(f"Continuing in background as PID {providers.process.pid()}, attempting to prevent idle timeout every {idle_timeout} seconds.")
 
