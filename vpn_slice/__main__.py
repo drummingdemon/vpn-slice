@@ -653,8 +653,14 @@ def main(args=None, environ=os.environ):
         if args.fork and os.fork():
             raise SystemExit
 
-        do_post_connect(env, args)
+        try:
+            do_post_connect(env, args)
+        except KeyboardInterrupt:
+            raise SystemExit(0)
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        raise SystemExit(0)
