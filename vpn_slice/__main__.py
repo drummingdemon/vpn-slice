@@ -331,9 +331,6 @@ def do_post_connect(env, args):
     if args.prevent_idle_timeout:
         dns = env.dns + env.dns6
         idle_timeout = env.idle_timeout
-        # Skip setproctitle on macOS due to fork-safety issues with CoreFoundation
-        if platform != 'darwin':
-            setproctitle(f'vpn-slice --prevent-idle-timeout --name {args.name}')
         if args.verbose:
             print(f"Continuing in background as PID {providers.process.pid()}, attempting to prevent idle timeout every {idle_timeout} seconds.")
 
@@ -650,6 +647,9 @@ def main(args=None, environ=os.environ):
 
         # we continue running in a new child process, so the VPN can actually
         # start in the background, because we need to actually send traffic to it
+        # Set process title before fork to avoid CoreFoundation fork-safety issues on macOS
+        if args.prevent_idle_timeout:
+            setproctitle(f'vpn-slice --prevent-idle-timeout --name {args.name}')
         if args.fork and os.fork():
             raise SystemExit
 

@@ -1,7 +1,7 @@
 vpn-slice
 =========
 
-Changes related to this fork: omits the use of setproctitle under macOS to prevent process crash under macOS Sequoia, Tahoe and up.
+Changes related to this fork: calls setproctitle before fork (instead of after) to avoid CoreFoundation fork-safety issues on macOS Sequoia, Tahoe and up.
 
 Install notes:
 ```sh
